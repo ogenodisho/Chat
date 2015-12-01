@@ -1,14 +1,21 @@
 var socket = null;
+var name = "";
 
 window.onload = function() {
  
     var messages = [];
     socket = io.connect();
+
+    while (!(name = prompt("What is your name?"))) {
+
+    }
+    socket.emit('user_loaded', { message : name });
+
     var field = document.getElementById("field");
     var sendButton = document.getElementById("send");
     var content = document.getElementById("content");
-
     var number = document.getElementById("number");
+    var user_list = document.getElementById("user_list");
  
     socket.on('new_message', function (data) {
         if(data.message) {
@@ -31,9 +38,20 @@ window.onload = function() {
             number.innerHTML = "You're the only user online :(";
         }
     });
+
+    socket.on('update_user_list', function (data) {
+        user_list.innerHTML = "";
+        for (var curr_name in data) {
+            if (curr_name !== name) {
+                var li = document.createElement("li");
+                li.appendChild(document.createTextNode(curr_name));
+                user_list.appendChild(li);
+            }
+        }
+    });
  
     function sendMessage() {
-        var text = field.value;
+        var text = name + ": " + field.value;
         socket.emit('send', { message: text });
         field.value = "";
     };
@@ -50,6 +68,6 @@ window.onload = function() {
 }
 
 window.onbeforeunload = function() {
-    socket.emit('user_unloaded', {});
+    socket.emit('user_unloaded', { message : name });
     return;
 }
