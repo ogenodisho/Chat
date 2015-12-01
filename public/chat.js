@@ -1,11 +1,9 @@
-var socket = null;
-var name = "";
-
 window.onload = function() {
  
-    var messages = [];
+    var messages = []; // keep track of client-side messages
     socket = io.connect();
 
+    // ask the user for a name 
     while (!(name = prompt("What is your name?"))) {
 
     }
@@ -21,7 +19,7 @@ window.onload = function() {
         if(data.message) {
             messages.push(data.message);
             var html = '';
-            for(var i=0; i<messages.length; i++) {
+            for(var i = 0; i < messages.length; i++) {
                 html += messages[i] + '<br />';
             }
             content.innerHTML = html;

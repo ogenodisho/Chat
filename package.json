@@ -1,15 +1,20 @@
 {
-    "name": "RealTimeWebChat",
-    "version": "0.0.0",
-    "description": "Real time web chat",
+    "name": "Chat",
+    "version": "1.0.0",
+    "description": "Chat",
     "main": "index.js",
   	"scripts": {
     	"start": "node index.js"
   	},
     "dependencies": {
+    	"angular": "latest",
+    	"bootstrap": "latest",
         "socket.io": "latest",
-        "express": "latest",
-        "jade": "latest"
+        "express": "latest"
     },
+	"repository": {
+  		"type": "git",
+  		"url": "git://github.com/ogenodisho/Chat.git"
+	},
     "author": "developer"
 }

@@ -4,7 +4,7 @@ var port = process.env.PORT || 8080;
 
 var users = {};
 
-app.set('views', __dirname + '/tpl');
+app.set('views', __dirname + '/views');
 app.set('view engine', "jade");
 app.engine('jade', require('jade').__express);
 app.get("/", function(req, res) {
