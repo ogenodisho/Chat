@@ -1,6 +1,4 @@
 window.onload = function() {
- 
-    var messages = []; // keep track of client-side messages
     socket = io.connect();
 
     // ask the user for a name 
@@ -16,16 +14,11 @@ window.onload = function() {
     var user_list = document.getElementById("user_list");
  
     socket.on('new_message', function (data) {
-        if(data.message) {
-            messages.push(data.message);
-            var html = '';
-            for(var i = 0; i < messages.length; i++) {
-                html += messages[i] + '<br />';
-            }
-            content.innerHTML = html;
-        } else {
-            console.log("There is a problem: ", data);
+        var html = '';
+        for(var i = 0; i < data.message.length; i++) {
+            html += data.message[i] + '<br />';
         }
+        content.innerHTML = html;
     });
 
     socket.on('update_user_freq', function (data) {
@@ -46,6 +39,9 @@ window.onload = function() {
                 user_list.appendChild(li);
             }
         }
+        var li = document.createElement("li");
+        li.appendChild(document.createTextNode("You!"));
+        user_list.appendChild(li);
     });
  
     function sendMessage() {

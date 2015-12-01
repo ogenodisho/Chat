@@ -12,14 +12,17 @@ app.get("/", function(req, res) {
 });
 app.use(express.static(__dirname + '/public'));
 var counter = 0;
+var messages = []
 var io = require('socket.io').listen(app.listen(port));
 io.sockets.on('connection', function (socket) {
-    socket.emit('new_message', { message: 'Welcome to the chat' });
+	
+
     counter++;
     io.sockets.emit('update_user_freq', { message: counter });
 
     socket.on('send', function (data) {
-        io.sockets.emit('new_message', data);
+    	messages.push(data.message);
+        io.sockets.emit('new_message', { message : messages });
     });
     socket.on('user_unloaded', function (data) {
         counter--;
@@ -30,6 +33,9 @@ io.sockets.on('connection', function (socket) {
     });
     socket.on('user_loaded', function (data) {
         users[data.message] = true;
+
+		messages.push('Welcome to the chat ' + data.message + "!");
+    	io.sockets.emit('new_message', { message : messages });
 
         io.sockets.emit('update_user_freq', { message: counter });
         io.sockets.emit('update_user_list', users);
