@@ -2,9 +2,11 @@ window.onload = function() {
     socket = io.connect();
 
     // ask the user for a name 
-    while (!(name = prompt("What is your name?"))) {
-
+    name = prompt("What is your name?").trim();
+    if (!name) {
+        name = "random_cunt_" + Math.round(Math.random() * 1000);
     }
+
     socket.emit('user_loaded', { message : name });
 
     var field = document.getElementById("field");
