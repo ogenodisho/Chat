@@ -1,5 +1,14 @@
+window.onfocus = function () { 
+  isActive = true; 
+}; 
+
+window.onblur = function () { 
+  isActive = false; 
+}; 
+
 window.onload = function() {
     socket = io.connect();
+    numberOfUnread = 0;
 
     // ask the user for a name 
     name = prompt("What is your name?").trim();
@@ -11,6 +20,7 @@ window.onload = function() {
 
     var field = document.getElementById("field");
     var sendButton = document.getElementById("send");
+    var tab_title = document.getElementById("tab_title");
     var content = document.getElementById("content");
     var number = document.getElementById("number");
     var user_list = document.getElementById("user_list");
@@ -21,6 +31,11 @@ window.onload = function() {
             html += data.message[i] + '<br />';
         }
         content.innerHTML = html;
+
+        if (data.name != name) {
+            numberOfUnread = isActive ? 0 : numberOfUnread + 1;
+            tab_title.innerHTML = numberOfUnread == 0 ? "Chat" : "(" + numberOfUnread + ") " + "Chat";
+        }
     });
 
     socket.on('update_user_freq', function (data) {
@@ -48,7 +63,7 @@ window.onload = function() {
  
     function sendMessage() {
         var text = name + ": " + field.value;
-        socket.emit('send', { message: text });
+        socket.emit('send', { message: text, name : name });
         field.value = "";
     };
 
@@ -60,6 +75,13 @@ window.onload = function() {
         if(keycode === 13) {
             sendMessage();
         }
+
+        numberOfUnread = 0;
+        tab_title.innerHTML = "Chat";
+    };
+    field.onclick = function() {
+        numberOfUnread = 0;
+        tab_title.innerHTML = "Chat";
     }
 }
 

@@ -25,7 +25,7 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('send', function (data) {
     	messages.push(data.message);
-        io.sockets.emit('new_message', { message : messages });
+        io.sockets.emit('new_message', { message : messages, name : data.name });
     });
     socket.on('user_unloaded', function (data) {
         counter--;
@@ -42,7 +42,7 @@ io.sockets.on('connection', function (socket) {
         users[data.message] = true;
 
 		messages.push('Welcome to the chat ' + data.message + "!");
-    	io.sockets.emit('new_message', { message : messages });
+    	io.sockets.emit('new_message', { message : messages, name : data.message });
 
         io.sockets.emit('update_user_freq', { message: counter });
         io.sockets.emit('update_user_list', users);
