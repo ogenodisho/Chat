@@ -18,10 +18,8 @@ var messages = [];
 
 var io = require('socket.io').listen(app.listen(port));
 io.sockets.on('connection', function (socket) {
-	
 
     counter++;
-    io.sockets.emit('update_user_freq', { message: counter });
 
     socket.on('send', function (data) {
     	messages.push(data.message);
