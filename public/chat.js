@@ -20,6 +20,7 @@ window.onload = function() {
 
     var field = document.getElementById("field");
     var sendButton = document.getElementById("send");
+    sendButton.disabled = true;
     var tab_title = document.getElementById("tab_title");
     var content = document.getElementById("content");
     var number = document.getElementById("number");
@@ -65,6 +66,7 @@ window.onload = function() {
         var text = name + ": " + field.value;
         socket.emit('send', { message: text, name : name });
         field.value = "";
+        sendButton.disabled = true;
     };
 
     sendButton.onclick = sendMessage;
@@ -72,12 +74,15 @@ window.onload = function() {
     field.onkeydown = function(event) {
         event = event || window.event;
         var keycode = event.charCode || event.keyCode;
-        if(keycode === 13) {
+        if(keycode === 13 && !sendButton.disabled) {
             sendMessage();
         }
 
         numberOfUnread = 0;
         tab_title.innerHTML = "Chat";
+    };
+    field.onkeyup = function(event) {
+        sendButton.disabled = field.value.trim().length == 0 ? true : false;
     };
     field.onclick = function() {
         numberOfUnread = 0;
