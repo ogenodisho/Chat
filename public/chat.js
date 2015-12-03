@@ -37,8 +37,9 @@ window.onload = function() {
     join_chat.onclick = joinChat;
 
     function joinChat() {
+        var time = getCurrentTime24Hr();
         name = random_name_field.value;
-        socket.emit('user_loaded', { message : name });
+        socket.emit('user_loaded', { message : name, time : time });
         document.getElementById("join_chat_div").style.display = "none";
     };
 
@@ -61,15 +62,19 @@ window.onload = function() {
         if (data.name != name) {
             numberOfUnread = isActive ? 0 : numberOfUnread + 1;
             tab_title.innerHTML = numberOfUnread == 0 ? "Chatogen" : "(" + numberOfUnread + ") " + "Chatogen";
+            var audio = new Audio('new_message.mp3');
+            audio.play();
         }
+
+        content.scrollTop = content.scrollHeight;
     });
 
     socket.on('update_user_freq', function (data) {
         var numberOfUsers = parseInt(data.message);
         if (numberOfUsers > 1) {
-            number.innerHTML = data.message + ' users online';
+            number.innerHTML = data.message + ' users online:';
         } else {
-            number.innerHTML = "You're the only user online :(";
+            number.innerHTML = '1 user online:';
         }
     });
 
@@ -86,10 +91,39 @@ window.onload = function() {
         li.appendChild(document.createTextNode("You!"));
         user_list.appendChild(li);
     });
+
+    socket.on('server_user_loaded', function (data) {
+        var html = '';
+        for(var i = 0; i < data.message.length; i++) {
+            html += data.message[i] + '<br />';
+        }
+        content.innerHTML = html;
+
+        if (data.name != name) {
+            numberOfUnread = isActive ? 0 : numberOfUnread + 1;
+            tab_title.innerHTML = numberOfUnread == 0 ? "Chatogen" : "(" + numberOfUnread + ") " + "Chatogen";
+        }
+
+        content.scrollTop = content.scrollHeight;
+    });
+    socket.on('server_user_unloaded', function (data) {
+        var html = '';
+        for(var i = 0; i < data.message.length; i++) {
+            html += data.message[i] + '<br />';
+        }
+        content.innerHTML = html;
+
+        if (data.name != name) {
+            numberOfUnread = isActive ? 0 : numberOfUnread + 1;
+            tab_title.innerHTML = numberOfUnread == 0 ? "Chatogen" : "(" + numberOfUnread + ") " + "Chatogen";
+        }
+
+        content.scrollTop = content.scrollHeight;
+    });
  
     function sendMessage() {
-        var text = name + ": " + field.value;
-        socket.emit('send', { message: text, name : name });
+        var time = getCurrentTime24Hr();
+        socket.emit('send', { message: field.value, name : name, time : time });
         field.value = "";
         sendButton.disabled = true;
     };
@@ -116,6 +150,21 @@ window.onload = function() {
 }
 
 window.onbeforeunload = function() {
-    socket.emit('user_unloaded', { message : name });
+    var time = getCurrentTime24Hr();
+    socket.emit('user_unloaded', { message : name, time : time });
     return;
+}
+
+function getCurrentTime24Hr() {
+    var date = new Date();
+    var hours = date.getHours();
+    if (hours < 10) {
+        hours = "0" + hours;
+    }
+    var minutes = date.getMinutes();
+    if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
+    var strTime = hours + ':' + minutes;
+    return strTime;
 }

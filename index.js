@@ -19,11 +19,9 @@ var messages = [];
 var io = require('socket.io').listen(app.listen(port));
 io.sockets.on('connection', function (socket) {
 
-    counter++;
-
     socket.on('send', function (data) {
     	if (data.name in users) {
-    		messages.push(data.message);
+    		messages.push("[" + data.time + "] " + data.name + ": " + data.message);
         	io.sockets.emit('new_message', { message : messages, name : data.name });
         }
     });
@@ -35,14 +33,18 @@ io.sockets.on('connection', function (socket) {
         	messages = [];
         }
 
+        messages.push("<font color=\"red\"><b>[" + data.time + "] " + data.message + " left the room!</b></font>");
+        io.sockets.emit('server_user_loaded', { message : messages, name : data.message });
+
         io.sockets.emit('update_user_freq', { message: counter });
         io.sockets.emit('update_user_list', users);
     });
     socket.on('user_loaded', function (data) {
+    	counter++;
         users[data.message] = true;
 
-		messages.push(data.message + " joined the room!");
-    	io.sockets.emit('new_message', { message : messages, name : data.message });
+		messages.push("<font color=\"green\"><b>[" + data.time + "] " + data.message + " joined the room!</b></font>");
+    	io.sockets.emit('server_user_loaded', { message : messages, name : data.message });
 
         io.sockets.emit('update_user_freq', { message: counter });
         io.sockets.emit('update_user_list', users);
