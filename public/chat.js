@@ -9,14 +9,7 @@ window.onblur = function () {
 window.onload = function() {
     socket = io.connect();
     numberOfUnread = 0;
-
-    // ask the user for a name 
-    name = prompt("What is your name?").trim();
-    if (!name) {
-        name = "random_cunt_" + Math.round(Math.random() * 1000);
-    }
-
-    socket.emit('user_loaded', { message : name });
+    name = "";
 
     var field = document.getElementById("field");
     var sendButton = document.getElementById("send");
@@ -25,6 +18,38 @@ window.onload = function() {
     var content = document.getElementById("content");
     var number = document.getElementById("number");
     var user_list = document.getElementById("user_list");
+    var random_name_field = document.getElementById("random_name_field");
+    var random_name_button = document.getElementById("random_name_button");
+    var join_chat = document.getElementById("join_chat");
+    join_chat.disabled = true;
+
+    random_name_field.onkeydown = function(event) {
+        event = event || window.event;
+        var keycode = event.charCode || event.keyCode;
+        if(keycode === 13 && !join_chat.disabled) {
+            joinChat();
+        }
+    };
+    random_name_field.onkeyup = function(event) {
+        join_chat.disabled = random_name_field.value.trim().length == 0 ? true : false;
+    };
+
+    join_chat.onclick = joinChat;
+
+    function joinChat() {
+        name = random_name_field.value;
+        socket.emit('user_loaded', { message : name });
+        document.getElementById("join_chat_div").style.display = "none";
+    };
+
+    random_name_button.onclick = function () {
+        socket.emit('get_random_name');
+    };
+
+    socket.on('send_random_name', function (data) {
+        random_name_field.value = data.message;
+        join_chat.disabled = false;
+    });
  
     socket.on('new_message', function (data) {
         var html = '';
@@ -35,7 +60,7 @@ window.onload = function() {
 
         if (data.name != name) {
             numberOfUnread = isActive ? 0 : numberOfUnread + 1;
-            tab_title.innerHTML = numberOfUnread == 0 ? "Chat" : "(" + numberOfUnread + ") " + "Chat";
+            tab_title.innerHTML = numberOfUnread == 0 ? "Chatogen" : "(" + numberOfUnread + ") " + "Chatogen";
         }
     });
 
@@ -79,14 +104,14 @@ window.onload = function() {
         }
 
         numberOfUnread = 0;
-        tab_title.innerHTML = "Chat";
+        tab_title.innerHTML = "Chatogen";
     };
     field.onkeyup = function(event) {
         sendButton.disabled = field.value.trim().length == 0 ? true : false;
     };
     field.onclick = function() {
         numberOfUnread = 0;
-        tab_title.innerHTML = "Chat";
+        tab_title.innerHTML = "Chatogen";
     }
 }
 

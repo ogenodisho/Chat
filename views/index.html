@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title id="tab_title">Chat</title>
+    <title id="tab_title">Chatogen</title>
     <script src="/chat.js">
     </script>
     <script src="/socket.io/socket.io.js">
@@ -11,12 +11,23 @@
 <body>
 
 	<div class="jumbotron">
-	  <h1 style="text-align:center">Chat</h1>
+	  <h1 style="text-align:center">Chatogen</h1>
+	</div>
+
+	<div id="join_chat_div" class="form-group center-block" style="width: 500px;">
+  		<div class="input-group">
+    		<input id="random_name_field" type="text" class="form-control"/>
+    		<span class="input-group-btn">
+      			<button id="random_name_button" class="btn btn-primary" type="button">Generate Rapper Name</button>
+    		</span>
+    		<span class="input-group-btn">
+      			<button id="join_chat" class="btn btn-primary" type="button">join</button>
+    		</span>
+  		</div>
 	</div>
 
     <div id="content" class="container-fluid" style="width: 500px; height: 300px; overflow-y: scroll; text-align:left; border: 1px solid #EEEEEE" align="center">
     </div>
-
     
     <div class="form-group center-block" style="width: 500px;">
   		<div class="input-group">
