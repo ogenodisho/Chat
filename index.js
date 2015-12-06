@@ -50,11 +50,59 @@ io.sockets.on('connection', function (socket) {
         io.sockets.emit('update_user_list', users);
     });
     socket.on('get_random_name', function (data) {
-    	sendRandomWutangName(socket);
+    	if (data.gender == "m") {
+    		switch (data.type) {
+    			case "rapper":
+    				getRandomRapperMaleName(socket);
+    			break;
+    			case "maori":
+    				getRandomMaoriMaleName(socket);
+    			break;
+    			case "chinese":
+    				getRandomChineseMaleName(socket);
+    			break;
+    			case "japanese":
+    				getRandomJapaneseMaleName(socket);
+    			break;
+    			case "indian":
+    				getRandomIndianMaleName(socket);
+    			break;
+    			case "korean":
+    				getRandomKoreanMaleName(socket);
+    			break;
+    			default:
+    				getRandomNameFromAll(socket);
+    				break;
+    		}
+    	} else {
+    		switch (data.type) {
+    			case "rapper":
+    				getRandomRapperFemaleName(socket);
+    			break;
+    			case "maori":
+    				getRandomMaoriFemaleName(socket);
+    			break;
+    			case "chinese":
+    				getRandomChineseFemaleName(socket);
+    			break;
+    			case "japanese":
+    				getRandomJapaneseFemaleName(socket);
+    			break;
+    			case "indian":
+    				getRandomIndianFemaleName(socket);
+    			break;
+    			case "korean":
+    				getRandomKoreanFemaleName(socket);
+    			break;
+    			default:
+    				getRandomNameFromAll(socket);
+    				break;
+    		}
+    	}
     })
 });
 
-function randomWutangNameHelper () {
+function generateFiveRandomLetters () {
 	// makes a random string to feed into the wutang website to get a random rapper name
     var text = "";
     var possible = "abcdefghijklmnopqrstuvwxyz";
@@ -64,37 +112,70 @@ function randomWutangNameHelper () {
 
     return text;
 }
-function sendRandomWutangName(socket) {
+function getRandomName(socket, behindthenameParameters) {
     var http = require('http');
-    var data = {
-   realname: randomWutangNameHelper()
-};
-var querystring = require("querystring");
-var qs = querystring.stringify(data);
-var qslength = qs.length;
-var options = {
-    hostname: "www.mess.be",
-    path: "/inickgenwuname.php",
-    method: 'POST',
-    headers:{
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Content-Length': qslength
-    }
-};
+	var options = {
+	    hostname: "www.behindthename.com",
+	    path: "/random/random.php?" + behindthenameParameters,
+	    method: 'GET'
+	};
 
-var str = "";
-var req = http.request(options, function(res) {
-    res.on('data', function (chunk) {
-       str+=chunk;
-    });
-    res.on('end', function() {
-        var s = str.slice(str.indexOf("From this day forward, I will be known as... ") + "From this day forward, I will be known as... ".length,
-    		str.indexOf("-And you"));
-    	s = s.replace("\n", "").trim();
-        socket.emit('send_random_name', { message : s });
-    });
-});
-
-req.write(qs);
-req.end();
+	var str = "";
+	var req = http.request(options, function(res) {
+	    res.on('data', function (chunk) {
+	       	str+=chunk;
+    	});
+    	res.on('end', function() {
+	        var s = str.slice(str.indexOf("<p><span class=\"heavyhuge\">") + "<p><span class=\"heavyhuge\">".length,
+    		str.indexOf("</span></p>"));
+    		s = s.replace("\n", "").trim();
+        	socket.emit('send_random_name', { message : s });
+    	});
+	});
+	req.end();
+}
+function getRandomRapperMaleName (socket) {
+	getRandomName(socket, "number=1&gender=m&surname=&randomsurname=yes&all=no&usage_rap=1");
+}
+function getRandomRapperFemaleName (socket) {
+	getRandomName(socket, "number=1&gender=f&surname=&randomsurname=yes&all=no&usage_rap=1");
+}
+function getRandomIndianMaleName (socket) {
+	getRandomName(socket, "number=1&gender=m&surname=&randomsurname=yes&all=no&usage_ind=1&usage_indm=1")
+}
+function getRandomIndianFemaleName (socket) {
+	getRandomName(socket, "number=1&gender=f&surname=&randomsurname=yes&all=no&usage_ind=1&usage_indm=1")
+}
+function getRandomArabicMaleName (socket) {
+	getRandomName(socket, "number=1&gender=m&surname=&randomsurname=yes&all=no&usage_ara=1")
+}
+function getRandomArabicFemaleName (socket) {
+	getRandomName(socket, "number=1&gender=f&surname=&randomsurname=yes&all=no&usage_ara=1")
+}
+function getRandomChineseMaleName (socket) {
+	getRandomName(socket, "number=1&gender=m&surname=&randomsurname=yes&all=no&usage_chi=1")
+}
+function getRandomChineseFemaleName (socket) {
+	getRandomName(socket, "number=1&gender=f&surname=&randomsurname=yes&all=no&usage_chi=1")
+}
+function getRandomKoreanMaleName (socket) {
+	getRandomName(socket, "number=1&gender=m&surname=&randomsurname=yes&all=no&usage_kor=1")
+}
+function getRandomKoreanFemaleName (socket) {
+	getRandomName(socket, "number=1&gender=f&surname=&randomsurname=yes&all=no&usage_kor=1")
+}
+function getRandomJapaneseMaleName (socket) {
+	getRandomName(socket, "number=1&gender=m&surname=&randomsurname=yes&all=no&usage_jap=1")
+}
+function getRandomJapaneseFemaleName (socket) {
+	getRandomName(socket, "number=1&gender=f&surname=&randomsurname=yes&all=no&usage_jap=1")
+}
+function getRandomMaoriMaleName (socket) {
+	getRandomName(socket, "number=1&gender=m&surname=&randomsurname=yes&all=no&usage_mao=1")
+}
+function getRandomMaoriFemaleName (socket) {
+	getRandomName(socket, "number=1&gender=f&surname=&randomsurname=yes&all=no&usage_mao=1")
+}
+function getRandomNameFromAll(socket) {
+	getRandomName(socket, "number=2&gender=m&surname=&randomsurname=yes&all=yes")
 }

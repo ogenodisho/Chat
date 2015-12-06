@@ -4,7 +4,9 @@ window.onfocus = function () {
 
 window.onblur = function () { 
   isActive = false; 
-}; 
+};
+
+hasJoined = false; 
 
 window.onload = function() {
     socket = io.connect();
@@ -20,6 +22,12 @@ window.onload = function() {
     var user_list = document.getElementById("user_list");
     var random_name_field = document.getElementById("random_name_field");
     var random_name_button = document.getElementById("random_name_button");
+    var random_rapper = document.getElementById("rapper");
+    var random_chinese = document.getElementById("chinese");
+    var random_japanese = document.getElementById("japanese");
+    var random_korean = document.getElementById("korean");
+    var random_indian = document.getElementById("indian");
+    var random_maori = document.getElementById("maori");
     var join_chat = document.getElementById("join_chat");
     join_chat.disabled = true;
 
@@ -41,11 +49,30 @@ window.onload = function() {
         name = random_name_field.value;
         socket.emit('user_loaded', { message : name, time : time });
         document.getElementById("join_chat_div").style.display = "none";
+        hasJoined = true;
     };
 
     random_name_button.onclick = function () {
-        socket.emit('get_random_name');
+        socket.emit('get_random_name', { gender : "m", type : ""});
     };
+    random_rapper.onclick = function () {
+        socket.emit('get_random_name', { gender : "m", type : "rapper"});  
+    }
+    random_chinese.onclick = function () {
+        socket.emit('get_random_name', { gender : "m", type : "chinese"});  
+    }
+    random_japanese.onclick = function () {
+        socket.emit('get_random_name', { gender : "m", type : "japanese"});  
+    }
+    random_korean.onclick = function () {
+        socket.emit('get_random_name', { gender : "m", type : "korean"});  
+    }
+    random_indian.onclick = function () {
+        socket.emit('get_random_name', { gender : "m", type : "indian"});  
+    }
+    random_maori.onclick = function () {
+        socket.emit('get_random_name', { gender : "m", type : "maori"});  
+    }
 
     socket.on('send_random_name', function (data) {
         random_name_field.value = data.message;
@@ -150,9 +177,11 @@ window.onload = function() {
 }
 
 window.onbeforeunload = function() {
-    var time = getCurrentTime24Hr();
-    socket.emit('user_unloaded', { message : name, time : time });
-    return;
+    if (hasJoined) {
+        var time = getCurrentTime24Hr();
+        socket.emit('user_unloaded', { message : name, time : time });  
+        return;
+    }
 }
 
 function getCurrentTime24Hr() {
